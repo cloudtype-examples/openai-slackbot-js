@@ -2,21 +2,22 @@ import * as dotenv from 'dotenv'
 dotenv.config()
 import pkg from '@slack/bolt';
 import openai from 'openai';
-const { App } = pkg;
+const { App, HTTPReceiver } = pkg;
 
 
-// Set up the OpenAI API credentials
 openai.apiKey = process.env.OPENAI_API_KEY;
 
+const httpReceiver = new HTTPReceiver({
+    unhandledRequestHandler: (args) => { console.warn('uh oh unhandled request'); }
+});
 
-// Initialize the Slack Bolt app
 const app = new App({
   token: process.env.SLACK_BOT_TOKEN,
   appToken: process.env.SLACK_APP_TOKEN,
-  signingSecret: process.env.SLACK_SIGNING_SECRET
+  signingSecret: process.env.SLACK_SIGNING_SECRET,
+  receiver: httpReceiver,
 });
 
-// Define the function to generate a response from the ChatGPT API
 const generateResponse = async (text) => {
   const response = await openai.complete({
     engine: 'davinci',
@@ -26,7 +27,6 @@ const generateResponse = async (text) => {
   return response.choices[0].text.trim();
 };
 
-// Define the function to handle incoming Slack messages
 app.message(async ({ message, say }) => {
   try {
     const response = await generateResponse(message.text);
@@ -36,7 +36,6 @@ app.message(async ({ message, say }) => {
   }
 });
 
-// Start the Slack Bolt app
 (async () => {
   await app.start(process.env.PORT || 3000);
   console.log('ChatGPT bot is running!');
