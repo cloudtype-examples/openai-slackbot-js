@@ -16,6 +16,7 @@ const app = new App({
   appToken: process.env.SLACK_APP_TOKEN,
   signingSecret: process.env.SLACK_SIGNING_SECRET,
   receiver: httpReceiver,
+  signatureVerification: false,
 });
 
 const generateResponse = async (text) => {
