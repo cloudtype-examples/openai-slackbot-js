@@ -8,7 +8,7 @@ dotenv.config();
 
 openai.apiKey = process.env.OPENAI_API_KEY;
 
-const appToken = process.env.SLACK_APP_TOKEN;
+const appToken = "xapp-1-A051N538KEK-5056183605415-8fe7821f4408f890f0caff4f048cedc03ea0354e2eebf57b7008b91ceaf9b2de";
 const slackSigningSecret = process.env.SLACK_SIGNING_SECRET;
 console.log(slackSigningSecret);
 
