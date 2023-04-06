@@ -22,6 +22,7 @@ const generateResponse = async (text) => {
     prompt: text,
     maxTokens: 60,
   });
+  console.log(response);
   return response.choices[0].text.trim();
 };
 
@@ -42,4 +43,5 @@ const handleMessage = async (event) => {
 (async () => {
   await socketModeClient.start();
   eventAdapter.on('message', handleMessage);
+  console.log(handleMessage);
 })();
