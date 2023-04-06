@@ -8,12 +8,13 @@ dotenv.config();
 
 openai.apiKey = process.env.OPENAI_API_KEY;
 
-const appToken = "xapp-1-A051N538KEK-5056183605415-8fe7821f4408f890f0caff4f048cedc03ea0354e2eebf57b7008b91ceaf9b2de";
+const appToken = process.env.SLACK_APP_TOKEN;
+const slackBotToken = process.env.SLACK_BOT_TOKEN;
 const slackSigningSecret = process.env.SLACK_SIGNING_SECRET;
-console.log(slackSigningSecret);
 
-const webClient = new WebClient(process.env.SLACK_BOT_TOKEN);
-const slackEvents = createEventAdapter("61672949189633c17040e4f46c097cd8");
+
+const webClient = new WebClient(slackBotToken);
+const eventAdapter = createEventAdapter(slackSigningSecret);
 const socketModeClient = new SocketModeClient({ appToken });
 
 const generateResponse = async (text) => {
@@ -42,6 +43,6 @@ const handleMessage = async (event) => {
 
 (async () => {
   await socketModeClient.start();
-  slackEvents.on('message', handleMessage);
+  eventAdapter.on('message', handleMessage);
   console.log(handleMessage);
 })();
