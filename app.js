@@ -1,48 +1,43 @@
-import { WebClient } from '@slack/web-api';
-import { createEventAdapter } from '@slack/events-api';
-import { SocketModeClient } from '@slack/socket-mode';
+import * as dotenv from 'dotenv'
+dotenv.config()
+import pkg from '@slack/bolt';
 import openai from 'openai';
-import dotenv from 'dotenv';
+const { App } = pkg;
 
-dotenv.config();
 
+// Set up the OpenAI API credentials
 openai.apiKey = process.env.OPENAI_API_KEY;
 
-const appToken = process.env.SLACK_APP_TOKEN;
-const slackBotToken = process.env.SLACK_BOT_TOKEN;
-const slackSigningSecret = process.env.SLACK_SIGNING_SECRET;
 
+// Initialize the Slack Bolt app
+const app = new App({
+  token: process.env.SLACK_BOT_TOKEN,
+  appToken: process.env.SLACK_APP_TOKEN,
+  signingSecret: process.env.SLACK_SIGNING_SECRET
+});
 
-const webClient = new WebClient(slackBotToken);
-const eventAdapter = createEventAdapter(slackSigningSecret);
-const socketModeClient = new SocketModeClient({ appToken });
-
+// Define the function to generate a response from the ChatGPT API
 const generateResponse = async (text) => {
   const response = await openai.complete({
     engine: 'davinci',
     prompt: text,
     maxTokens: 60,
   });
-  console.log(response);
   return response.choices[0].text.trim();
 };
 
-const handleMessage = async (event) => {
+// Define the function to handle incoming Slack messages
+app.message(async ({ message, say }) => {
   try {
-    const { text, channel } = event;
-    const response = await generateResponse(text);
-    await webClient.chat.postMessage({
-      channel,
-      text: response,
-    });
+    const response = await generateResponse(message.text);
+    await say(response);
   } catch (error) {
     console.error(error);
   }
-};
+});
 
-
+// Start the Slack Bolt app
 (async () => {
-  await socketModeClient.start();
-  eventAdapter.on('message', handleMessage);
-  console.log(handleMessage);
+  await app.start(process.env.PORT || 3000);
+  console.log('ChatGPT bot is running!');
 })();
