@@ -10,10 +10,10 @@ openai.apiKey = process.env.OPENAI_API_KEY;
 
 const appToken = process.env.SLACK_APP_TOKEN;
 const slackSigningSecret = process.env.SLACK_SIGNING_SECRET;
-
+console.log(slackSigningSecret);
 
 const webClient = new WebClient(process.env.SLACK_BOT_TOKEN);
-const slackEvents = createEventAdapter(slackSigningSecret);
+const slackEvents = createEventAdapter("61672949189633c17040e4f46c097cd8");
 const socketModeClient = new SocketModeClient({ appToken });
 
 const generateResponse = async (text) => {
