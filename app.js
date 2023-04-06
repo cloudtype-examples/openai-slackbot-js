@@ -12,8 +12,9 @@ const SLACK_APP_TOKEN = process.env.SLACK_APP_TOKEN;
 const SLACK_BOT_TOKEN = process.env.SLACK_BOT_TOKEN;
 const SLACK_SIGNING_SECRET = process.env.SLACK_SIGNING_SECRET;
 
+
 const webClient = new WebClient(SLACK_BOT_TOKEN);
-const eventAdapter = createEventAdapter(SLACK_SIGNING_SECRET);
+const eventAdapter = createEventAdapter('');
 const socketModeClient = new SocketModeClient({ appToken: SLACK_APP_TOKEN });
 
 const generateResponse = async (text) => {
