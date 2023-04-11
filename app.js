@@ -48,7 +48,7 @@ app.event("message", async ({ message, say }) => {
 app.event("app_mention", async ( { message, say }) => {
 
   try {
-    const response = await openai.ChatCompletion.create({
+    const response = await openai.createChatCompletion({
       model: "gpt-3.5-turbo",
       messages: [
         { role: "user", content: `${message.text}` }
