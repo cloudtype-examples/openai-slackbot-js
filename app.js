@@ -24,22 +24,47 @@ app.message('Test', async ({ message, say }) => {
   await say(`Test: <@${message.user}>`);
 });
 
-app.event("message", async ({ event, say }) => {
+app.event("message", async ({ message, say }) => {
 
-  const response = await openai.createCompletion({
-    model: "text-davinci-003",
-    prompt: `${event.text}`,
-    temperature: 0.9,
-    max_tokens: 300,
-    top_p: 1,
-    frequency_penalty: 0,
-    presence_penalty: 0.6,
-    stop: [" Human:", " AI:"],
-  });
+  console.log(message);
 
-  console.log(response);
-  say(response.data.choices[0].text);
+  try {
+    const response = await openai.createChatCompletion({
+      model: "gpt-3.5-turbo",
+      messages: [
+        { role: "user", content: `${message.text}` }
+      ],
+    });
+
+    console.log(response);
+    await say(response.data.choices[0].message.content);
+  } catch (err) {
+    console.log(err);
+    return await say("Error")
+  }
+
 });
+
+app.event("app_mention", async ( { message, say }) => {
+
+  try {
+    const response = await openai.ChatCompletion.create({
+      model: "gpt-3.5-turbo",
+      messages: [
+        { role: "user", content: `${message.text}` }
+      ],
+    });
+
+    console.log(response);
+    await say(response.data.choices[0].message.content);
+
+  } catch (err) {
+    console.log(err);
+    return await say("Error")
+  }
+  
+});
+
 
 (async () => {
   await app.start();
